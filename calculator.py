@@ -1,13 +1,15 @@
 from tkinter import *
 from tkinter import messagebox
+from functools import reduce
 
 class Calculator:
     def __init__(self):
         self.root = Tk()
-        self.root.geometry("300x250")
+        self.root.geometry("300x300")
         self.root.title("")
         self.font = ('Arial', 22)
         self.nums = []
+        self.results = None
         self.operate = None
 
         self.textbox = Text(self.root,  height=1, font=self.font)
@@ -52,7 +54,8 @@ class Calculator:
         rows= 4
         columns = 4
 
-        Button(self.button_frame, text='=', height=2).grid(row=3, column=3, sticky=W + E)
+        Button(self.button_frame, text='c', height=2, command=lambda
+            text='c': self.on_click(text)).grid(row=3, column=3, sticky=W + E)
 
         # Creating the nums
         for i in range(rows-1):
@@ -73,24 +76,29 @@ class Calculator:
             self.nums.append(button_text)
 
         if isinstance(button_text, str):
-            self.operate = button_text
+            if button_text == 'c':
+                self.textbox.delete('1.0', END)
+                self.textbox.insert(END, '0')
+                self.nums.clear()
+            else:
+                self.operate = button_text
 
-        if len(self.nums) == 2:
+        if len(self.nums) > 1:
             res = self.calculate()
+            self.results = res
             self.textbox.delete('1.0', END)
-            self.textbox.insert(END, str(res))
+            self.textbox.insert(END, str(self.results))
 
     def calculate(self):
         res = None
         if self.operate == '+':
-            res = self.nums[0] + self.nums[1]
+            res = reduce(lambda x, y: x + y, self.nums)
 
         elif self.operate == 'x':
-            res = self.nums[0] * self.nums[1]
-
+            res = reduce(lambda x, y: x * y, self.nums)
 
         elif self.operate == '-':
-            res = self.nums[0] - self.nums[1]
+            res = reduce(lambda x, y: x - y, self.nums)
 
         return res
 
