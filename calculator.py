@@ -8,15 +8,11 @@ class Calculator:
         self.root.geometry("300x300")
         self.root.title("")
         self.font = ('Arial', 22)
-        self.nums = []
-        self.results = None
-        self.operate = None
+        self.nums = ''
 
         self.textbox = Text(self.root,  height=1, font=self.font)
         self.textbox.insert(END, '0')  # Starting 0
         self.textbox.pack(padx=10, pady=20)
-        # self.textbox = Entry(self.root, font=self.font, justify='right', state='disabled')
-        # self.textbox.pack(padx=10, pady=20, fill='x')
 
         # Creating buttons with grid
         self.button_frame = Frame(self.root)
@@ -50,57 +46,41 @@ class Calculator:
         self.button_frame.columnconfigure(3, weight=1)
 
         # Creating the chars
-        chars = ['x', '-', '+']
+        chars = ['*', '-', '+']
         rows= 4
         columns = 4
 
-        Button(self.button_frame, text='c', height=2, command=lambda
-            text='c': self.on_click(text)).grid(row=3, column=3, sticky=W + E)
+        Button(self.button_frame, text='c', height=2, command=self.reset).grid(row=3, column=0, sticky=W + E, columnspan=2)
+
+        Button(self.button_frame, text='=', height=2, command=lambda
+            text='=': self.calculate()).grid(row=3, column=2, sticky=W + E, columnspan=2)
 
         # Creating the nums
         for i in range(rows-1):
             for n in range(columns):
                 button_text = (i * 3 + n + 1) if n != 3 else chars[i]
                 Button(self.button_frame, text=str(button_text), height=2, command=lambda
-                    text=button_text:self.on_click(text)).grid(row=i, column=n, sticky=W + E)
+                    val=button_text:self.add_to_nums(val)).grid(row=i, column=n, sticky=W + E)
 
         self.button_frame.pack(fill=X)
 
     def show_contact(self):
         messagebox.showinfo(title="Contact", message='alihesenhadi@gmail.com')
 
-    def on_click(self, button_text):
-        if isinstance(button_text, int):
-            self.textbox.delete('1.0', END)
-            self.textbox.insert(END, str(button_text))
-            self.nums.append(button_text)
-
-        if isinstance(button_text, str):
-            if button_text == 'c':
-                self.textbox.delete('1.0', END)
-                self.textbox.insert(END, '0')
-                self.nums.clear()
-            else:
-                self.operate = button_text
-
-        if len(self.nums) > 1:
-            res = self.calculate()
-            self.results = res
-            self.textbox.delete('1.0', END)
-            self.textbox.insert(END, str(self.results))
+    def add_to_nums(self, val):
+        self.textbox.delete('1.0', END)
+        self.nums += str(val)
+        self.textbox.insert(END, str(val))
 
     def calculate(self):
-        res = None
-        if self.operate == '+':
-            res = reduce(lambda x, y: x + y, self.nums)
+        res = eval(self.nums)
+        self.textbox.delete('1.0', END)
+        self.textbox.insert(END, str(res))
 
-        elif self.operate == 'x':
-            res = reduce(lambda x, y: x * y, self.nums)
-
-        elif self.operate == '-':
-            res = reduce(lambda x, y: x - y, self.nums)
-
-        return res
+    def reset(self):
+        self.textbox.delete('1.0', END)
+        self.textbox.insert(END, '0')
+        self.nums = ''
 
     def on_close(self):
         if messagebox.askyesno(title="Quit?", message="Are you sure you want to quit?"):
