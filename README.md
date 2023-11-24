@@ -1,2 +1,2 @@
 # GuiCalculator
-A Basic GUI Based Calculator
+A Basic GUI Based Calculator powered by tkinter. 
